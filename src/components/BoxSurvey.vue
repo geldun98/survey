@@ -22,7 +22,7 @@
           </div>
         </div>
       </div>
-      <div class="mode mode2" v-if="count >= 2 && count <= listTitle.length">
+      <div class="mode mode2" v-if="count >= 2 && count < listTitle.length">
         <div class="title-survey">Câu {{ title.id }}: {{ title.content }}</div>
         <div class="main-survey">
           <textarea
@@ -32,6 +32,39 @@
             ref="reftextarea"
             @input="autoResize"
           ></textarea>
+        </div>
+      </div>
+      <div class="mode mode3" v-if="count === listTitle.length">
+        <div class="title-survey">Câu {{ title.id }}: {{ title.content }}</div>
+        <div>
+          <div class="item-input">
+            <input
+              v-model="result[count]"
+              type="radio"
+              value="Chưa giới thiệu"
+              id="chuagioithieu"
+            />
+            <label for="chuagioithieu">Chưa giới thiệu</label>
+          </div>
+          <div class="item-input">
+            <input
+              v-model="result[count]"
+              type="radio"
+              value="Đã giới thiệu"
+              id="dagioithieu"
+            />
+            <label for="dagioithieu">Đã giới thiệu</label>
+          </div>
+        </div>
+        <div v-if="invite" class="frined">
+          <div class="friend-input">
+            <span>Họ và tên :</span>
+            <input type="text" v-model="friend['name']" />
+          </div>
+          <div class="friend-input">
+            <span>Số điện thoại :</span>
+            <input type="text" v-model="friend['phone']" />
+          </div>
         </div>
       </div>
       <div class="loading" v-if="isLoading">
@@ -68,7 +101,10 @@ export default {
     return {
       count: 1,
       isLoading: false,
-
+      friend: {
+        name: null,
+        phone: null,
+      },
       result: {},
       listTitle: [
         { id: 1, content: "Giảng viên hiện tại của bạn là ai?" },
@@ -81,7 +117,7 @@ export default {
         {
           id: 5,
           content:
-            "Bạn đã giới thiệu bạn bè, người thân tham gia chương trình tại Rikkei Academy chưa? Nếu có, hãy viết tên bạn ấy ra để cả hai cùng nhận một phần quà nho nhỏ từ Rikkei Academy nhé.",
+            "Bạn đã giới thiệu bạn bè, người thân tham gia chương trình tại Rikkei Academy chưa? Nếu có, hãy viết tên + sđt bạn ấy ra để cả hai cùng nhận một phần quà nho nhỏ từ Rikkei Academy nhé.",
         },
       ],
       listMode1: [
@@ -117,12 +153,14 @@ export default {
     },
     async sendGoogleSheet() {
       const scriptURL =
-        "https://script.google.com/macros/s/AKfycbww9ZWefsZUu6-B5xAweKgQdeslYjGaFxnsa6b3r1E4qqiNKKBOk3ZXCn5IhDv-iA3RYA/exec";
+        "https://script.google.com/macros/s/AKfycbyTTaRaOBJgBjaSapSK7h4oYSS9WjAwqWziNTK3PpTW-gZQDLAW5fiIqUDjrpiO7ywvfQ/exec";
 
       let formData = new FormData();
       formData.append("Fullname", this.user.fullname);
       formData.append("Email", this.user.email);
       formData.append("Phone", this.user.phone);
+      formData.append("NameFriend", this.friend.name);
+      formData.append("PhoneFriend", this.user.phone);
 
       formData.append("Q1", this.result[1] || "");
       formData.append("Q2", this.result[2] || "");
@@ -144,6 +182,12 @@ export default {
     },
     mode1() {
       return this.listMode1.find((item) => item.id === this.count);
+    },
+    invite() {
+      if (this.result[5] === "Đã giới thiệu") {
+        return true;
+      }
+      return false;
     },
   },
   watch: {},
@@ -308,6 +352,30 @@ export default {
   justify-content: center;
   flex-direction: column;
   align-items: center;
+}
+.frined {
+  margin-bottom: 15px;
+}
+.friend-input {
+  span {
+    display: inline-block;
+    width: 120px;
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 15px;
+  }
+  input {
+    padding: 5px 10px;
+    outline: 1px solid transparent;
+    border: 0;
+    font-family: "Roboto", sans-serif;
+    font-size: 16px;
+    width: 250px;
+    line-height: 1.1;
+    &:focus {
+      outline-color: #3498db;
+    }
+  }
 }
 //Responsive
 @mixin maxWidth($width) {
