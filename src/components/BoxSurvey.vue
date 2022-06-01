@@ -116,7 +116,8 @@ export default {
       }
     },
     async sendGoogleSheet() {
-      const scriptURL = "https://script.google.com/macros/";
+      const scriptURL =
+        "https://script.google.com/macros/s/AKfycbww9ZWefsZUu6-B5xAweKgQdeslYjGaFxnsa6b3r1E4qqiNKKBOk3ZXCn5IhDv-iA3RYA/exec";
 
       let formData = new FormData();
       formData.append("Fullname", this.user.fullname);
@@ -124,10 +125,10 @@ export default {
       formData.append("Phone", this.user.phone);
 
       formData.append("Q1", this.result[1] || "");
-      formData.append("Q2", this.result[1] || "");
-      formData.append("Q3", this.result[1] || "");
-      formData.append("Q4", this.result[1] || "");
-      formData.append("Q5", this.result[1] || "");
+      formData.append("Q2", this.result[2] || "");
+      formData.append("Q3", this.result[3] || "");
+      formData.append("Q4", this.result[4] || "");
+      formData.append("Q5", this.result[5] || "");
 
       try {
         await fetch(scriptURL, { method: "POST", body: formData });
